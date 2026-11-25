@@ -1,4 +1,4 @@
-# Dila-Dila – User Accounts and Authentication (Increment 1, part 1)
+# Dila-Dila – User Accounts, Authentication, Profile and Password Management (Increments 1 and 2)
 
 Spring Boot 3 + PostgreSQL backend, React (Vite) frontend. Server-side sessions, BCrypt hashes, RBAC in both tiers.
 
@@ -32,6 +32,24 @@ API: `POST /api/auth/register|login|logout`, `GET /api/auth/me`, `GET /api/membe
 4. Sign in as Member -> `/member`; nav shows no lead links; open `/lead` -> 403 page; `curl` of `/api/lead/dashboard` with the member session -> 403.
 5. Sign in as Lead -> `/lead` with account stats; `/lead/team` lists accounts.
 6. Sign out -> back to login; the old session cookie now gets 401; `/member` redirects to login.
+
+## Increment 2: profile and password management
+| Requirement | Where |
+|---|---|
+| View/edit own profile (name, phone, bio, photo link); email and role are read-only | `ProfileController`, `AccountService`, `ProfileRequest`, `Profile.jsx` |
+| Change password (current password required, confirm, new != old, BCrypt) | `POST /api/account/change-password`, `ChangePasswordRequest`, `Profile.jsx` |
+| Forgot / reset password (random 256-bit token, SHA-256 hash stored, expires in 30 min, single use, same answer for unknown emails, 60 s per-account cool-down) | `PasswordResetController`, `PasswordResetService`, `PasswordResetToken`, `ForgotPassword.jsx`, `ResetPassword.jsx` |
+
+New endpoints: `GET/PUT /api/profile`, `POST /api/account/change-password`, `POST /api/auth/forgot-password`, `POST /api/auth/reset-password`.
+New tables/columns: `users.phone, bio, avatar_url, updated_at` and `password_reset_tokens` (see `database/schema.sql`; Hibernate creates them automatically).
+
+**Reset emails.** With no SMTP configured (default), the reset link is printed in the backend console ("DEV MODE password reset link ...") so the flow can be demonstrated. To send real email set these environment variables: `SPRING_MAIL_HOST`, `SPRING_MAIL_PORT` (587), `SPRING_MAIL_USERNAME`, `SPRING_MAIL_PASSWORD`, `SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true`, `SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true`, `MAIL_FROM`. Use an app password, never a personal one in a file.
+
+### Demo script (Increment 2)
+1. Sign in, open **My Profile**, change the name/phone/bio, save; try an empty name and a `http://` photo link to see validation errors.
+2. **Change password**: wrong current password (error), mismatch (error), then a valid change. Sign out; the old password is rejected, the new one works.
+3. **Forgot password** on the login page: enter the email, then copy the link from the backend console (or email). Set a new password, sign in with it.
+4. Open the same link again: "invalid or has expired". Check `select email, password_hash from users;` and `select * from password_reset_tokens;` (only hashes).
 
 ## SRS note
 The SRS specifies Google sign-in (FR-001, NFR-004) with per-project roles. This increment implements local email/password accounts with account-level roles (LEAD, MEMBER) as the assignment requires. Suggested SRS addendum: local credentials are an additional sign-in method; Google OAuth remains planned for a later increment.

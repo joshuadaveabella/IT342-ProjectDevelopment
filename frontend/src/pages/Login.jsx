@@ -34,6 +34,7 @@ export default function Login() {
       <form className="card" onSubmit={submit} noValidate>
         <h1>Sign in to Dila-Dila</h1>
         {location.state?.registered && <p className="ok" role="status">Account created. You can sign in now.</p>}
+        {location.state?.reset && <p className="ok" role="status">Password updated. Sign in with your new password.</p>}
         {error && <p className="error" role="alert">{error}</p>}
         <label>Email
           <input type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -42,6 +43,7 @@ export default function Login() {
           <input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </label>
         <button className="btn" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+        <p className="muted"><Link to="/forgot-password">Forgot password?</Link></p>
         <p className="muted">No account? <Link to="/register">Create one</Link></p>
       </form>
     </div>

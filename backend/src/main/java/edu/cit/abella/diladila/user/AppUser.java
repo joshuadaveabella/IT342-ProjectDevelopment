@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -25,7 +26,7 @@ public class AppUser {
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
-    /** Always stored in lower case, so the unique constraint prevents duplicate accounts. */
+    /** Always stored in lower case, so the unique constraint prevents duplicate accounts. Not editable. */
     @Column(name = "email", nullable = false, length = 150)
     private String email;
 
@@ -40,8 +41,21 @@ public class AppUser {
     @Column(name = "enabled", nullable = false)
     private boolean enabled = true;
 
+    // ---- Profile fields (Increment 2) ----
+    @Column(name = "phone", length = 20)
+    private String phone;
+
+    @Column(name = "bio", length = 255)
+    private String bio;
+
+    @Column(name = "avatar_url", length = 255)
+    private String avatarUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
     protected AppUser() {
         // required by JPA
@@ -61,11 +75,32 @@ public class AppUser {
         }
     }
 
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = Instant.now();
+    }
+
+    /** Only the editable profile fields. Email and role are deliberately not changeable here. */
+    public void updateProfile(String fullName, String phone, String bio, String avatarUrl) {
+        this.fullName = fullName;
+        this.phone = phone;
+        this.bio = bio;
+        this.avatarUrl = avatarUrl;
+    }
+
+    public void changePasswordHash(String newHash) {
+        this.passwordHash = newHash;
+    }
+
     public Long getId() { return id; }
     public String getFullName() { return fullName; }
     public String getEmail() { return email; }
     public String getPasswordHash() { return passwordHash; }
     public Role getRole() { return role; }
     public boolean isEnabled() { return enabled; }
+    public String getPhone() { return phone; }
+    public String getBio() { return bio; }
+    public String getAvatarUrl() { return avatarUrl; }
     public Instant getCreatedAt() { return createdAt; }
+    public Instant getUpdatedAt() { return updatedAt; }
 }

@@ -6,6 +6,7 @@ const NAV = [
   { to: '/member', label: 'My Dashboard', roles: ['MEMBER', 'LEAD'] },
   { to: '/lead', label: 'Lead Dashboard', roles: ['LEAD'] },
   { to: '/lead/team', label: 'Team Accounts', roles: ['LEAD'] },
+  { to: '/profile', label: 'My Profile', roles: ['MEMBER', 'LEAD'] },
 ];
 
 export default function Layout() {

@@ -1,9 +1,11 @@
 package edu.cit.abella.diladila.web;
 
 import edu.cit.abella.diladila.auth.DuplicateEmailException;
+import edu.cit.abella.diladila.auth.InvalidResetTokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
@@ -43,5 +45,18 @@ public class ApiExceptionHandler {
                 ? "This account is disabled."
                 : "Invalid email or password.";
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("status", 401, "error", msg));
+    }
+
+    @ExceptionHandler(FieldValidationException.class)
+    public ResponseEntity<Map<String, Object>> fieldRule(FieldValidationException ex) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "status", 400, "error", "Please correct the highlighted fields.", "fields", ex.getFields()));
+    }
+
+    /** Wrong, expired or already used reset link. One message for all three cases. */
+    @ExceptionHandler({InvalidResetTokenException.class, ObjectOptimisticLockingFailureException.class})
+    public ResponseEntity<Map<String, Object>> badResetToken(Exception ex) {
+        return ResponseEntity.badRequest().body(Map.of(
+                "status", 400, "error", new InvalidResetTokenException().getMessage()));
     }
 }

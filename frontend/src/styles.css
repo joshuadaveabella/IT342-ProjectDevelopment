@@ -20,3 +20,10 @@ input[aria-invalid="true"] { border-color:var(--err); }
 .badge { font-size:.7rem; padding:2px 8px; border-radius:99px; font-weight:700; } .badge.LEAD { background:#e0e4ff; color:#2a36a0; } .badge.MEMBER { background:#dcf5e7; color:#0b5a33; }
 .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px; } .stat { display:flex; flex-direction:column; } .stat b { font-size:2rem; }
 table { width:100%; border-collapse:collapse; } th, td { text-align:left; padding:8px; border-bottom:1px solid var(--line); font-size:.9rem; }
+textarea { padding:10px; border:1px solid var(--line); border-radius:8px; font:inherit; resize:vertical; }
+textarea[aria-invalid="true"] { border-color:var(--err); }
+.form { display:flex; flex-direction:column; gap:12px; } .form h2 { margin:0; font-size:1.15rem; }
+.two-col { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; align-items:start; }
+.profile-head { display:flex; gap:12px; align-items:center; } .small { font-size:.8rem; font-weight:400; }
+.avatar { width:56px; height:56px; border-radius:50%; object-fit:cover; background:#e0e4ff; }
+.avatar.placeholder { display:grid; place-items:center; font-weight:700; color:#2a36a0; font-size:1.3rem; }

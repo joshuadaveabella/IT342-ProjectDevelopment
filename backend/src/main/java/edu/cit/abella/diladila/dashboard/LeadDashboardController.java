@@ -48,6 +48,6 @@ public class LeadDashboardController {
     /** Lead-only operation: list registered accounts (used to pick team members). */
     @GetMapping("/users")
     public List<UserResponse> listUsers() {
-        return users.findAllByOrderByCreatedAtDesc().stream().map(UserResponse::from).toList();
+        return users.findAllByOrderByCreatedAtDesc().stream().map(UserResponse::publicView).toList();
     }
 }
